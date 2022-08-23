@@ -10,7 +10,7 @@ package labrpc
 // so, while you can modify this code to help you debug, please
 // test against the original before submitting.
 //
-// adapted from Go net/rpc/server.go.
+// adapted from Go net/rpcReq/server.go.
 //
 // sends labgob-encoded values to ensure that RPCs
 // don't include references to program objects.
@@ -379,8 +379,8 @@ func (rn *Network) GetTotalBytes() int64 {
 
 //
 // a server is a collection of services, all sharing
-// the same rpc dispatcher. so that e.g. both a Raft
-// and a k/v server can listen to the same rpc endpoint.
+// the same rpcReq dispatcher. so that e.g. both a Raft
+// and a k/v server can listen to the same rpcReq endpoint.
 //
 type Server struct {
 	mu       sync.Mutex
