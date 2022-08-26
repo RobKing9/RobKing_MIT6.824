@@ -32,7 +32,7 @@ func Worker(mapf func(string, string) []KeyValue, reducef func(string, []string)
 	for {
 		task := w.ReqTask()
 		w.doTask(task)
-		time.Sleep(time.Second * 10)
+		time.Sleep(time.Second * 5)
 	}
 }
 
@@ -40,5 +40,8 @@ func Worker(mapf func(string, string) []KeyValue, reducef func(string, []string)
 func (w *worker) doTask(t mr.Task) {
 	if t.TaskPhase == mr.MapPhase {
 		w.doMapTask(t)
+	}
+	if t.TaskPhase == mr.ReducePhase {
+		w.doReduceTask(t)
 	}
 }
