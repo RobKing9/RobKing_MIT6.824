@@ -19,6 +19,11 @@ const (
 	TaskErr = 4 // TaskErr 执行过程出现错误
 )
 
+const (
+	MaxTaskRunTime   = time.Second * 10       //任务运行的最长时间
+	GenerateInterval = time.Millisecond * 500 //分配任务的间隔时间
+)
+
 // TaskStat 任务的动态信息
 type TaskStat struct {
 	status    int       //任务的状态
@@ -54,7 +59,8 @@ func MakeMaster(files []string, nReduce int) *Master {
 	//开辟一个 携程 持续分配任务
 	go func() {
 		for !m.done {
-			m.GenerateTask()
+			go m.GenerateTask()
+			time.Sleep(GenerateInterval)
 		}
 	}()
 
@@ -71,15 +77,8 @@ func max(x, y int) int {
 	return x
 }
 
-//管理所有的任务
-func (m *Master) schedule() {
-
-}
-
 // Done
 //返回true证明所有的工作都完成了
 func (m *Master) Done() bool {
-	ret := false
-
-	return ret
+	return m.done
 }

@@ -21,10 +21,20 @@ func (m *Master) initTaskById(taskId int) mr.Task {
 		TaskId:    taskId,
 		FileName:  "", //只有map任务 才有文件名
 		TaskPhase: m.taskPhase,
+		NReduce:   m.nReduce,
+		NMap:      len(m.files),
 	}
 	if m.taskPhase == mr.MapPhase {
 		task.FileName = m.files[taskId]
 	}
 	log.Printf("通过id初始化任务成功！任务号：%d，任务类型：%v，分配的任务文件是：%v", task.TaskId, task.TaskPhase, task.FileName)
 	return task
+}
+
+//初始化 Reduce 任务
+func (m *Master) initReduceTask() {
+	//任务类型
+	m.taskPhase = mr.ReducePhase
+	//所有Reduce任务的状态
+	m.taskStats = make([]TaskStat, m.nReduce)
 }

@@ -14,4 +14,6 @@ type Task struct {
 	//任务类型
 	TaskPhase TaskPhase
 	FileName  string //map 任务 一个map任务 一个文件
+	NReduce   int    //reduce任务数量
+	NMap      int    //Map任务的数量
 }

@@ -61,3 +61,20 @@ func (w *worker) ReqTask() mr.Task {
 	log.Printf("工号为%d的工人申请任务成功了！！！接下来准备干活吧！！！", w.workerId)
 	return *reply.Task
 }
+
+// ReportTask 是否完成Map任务，向Master汇报
+//汇报的内容主要有 是否完成（如果没有完成，原因是什么），完成的任务号，任务类型， 哪个工人完成的
+func (w *worker) ReportTask(t mr.Task, done bool, err error) {
+	if err != nil {
+		log.Println("没有完成任务：", err.Error())
+	}
+	reportArgs := &rpcReq.ReportTaskArgs{}
+	reportArgs.Done = done
+	reportArgs.WorkId = w.workerId
+	reportArgs.TaskId = t.TaskId
+	reportArgs.TaskPhase = t.TaskPhase
+	reply := &rpcReq.ReportTaskReply{}
+	if ok := call("Master.AcceptReport", reportArgs, reply); !ok {
+		log.Println("汇报任务失败！")
+	}
+}
