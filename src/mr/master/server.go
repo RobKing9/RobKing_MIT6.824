@@ -23,7 +23,9 @@ func (m *Master) server() {
 
 // RegWorker 给工人 发放工号
 func (m *Master) RegWorker(args *rpcReq.ReqWorkerIdArgs, reply *rpcReq.ReqWorkerIdReply) error {
-
+	//防止Worker竞争id
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	//工号每次 +1
 	m.workerId = m.workerId + 1
 	reply.WorkerId = m.workerId
@@ -33,6 +35,8 @@ func (m *Master) RegWorker(args *rpcReq.ReqWorkerIdArgs, reply *rpcReq.ReqWorker
 
 // GetOneTask 给 worker 发送任务
 func (m *Master) GetOneTask(args *rpcReq.TaskArgs, reply *rpcReq.TaskReply) error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	//从任务管道中 取出 一个任务
 	task := <-m.taskCh
 	//返回给 worker
@@ -48,6 +52,8 @@ func (m *Master) GetOneTask(args *rpcReq.TaskArgs, reply *rpcReq.TaskReply) erro
 
 // AcceptReport 接收 Worker 汇报任务
 func (m *Master) AcceptReport(args *rpcReq.ReportTaskArgs, reply *rpcReq.ReportTaskReply) error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	//判断 任务类型以及工人id 和分配的时候是不是一致的
 	if args.TaskPhase != m.taskPhase || args.WorkId != m.taskStats[args.TaskId].workerId {
 		log.Println("分配不一致！")

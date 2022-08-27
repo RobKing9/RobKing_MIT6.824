@@ -2,7 +2,6 @@ package master
 
 import (
 	"6.824/src/mr"
-	"log"
 	"time"
 )
 
@@ -10,8 +9,9 @@ import (
 
 // GenerateTask 管理所有的任务
 func (m *Master) GenerateTask() {
-	//m.mu.Lock()
-	//defer m.mu.Unlock()
+	//防止Worker竞争同一个任务
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	//任务都完成了
 	if m.done {
 		return
@@ -36,7 +36,7 @@ func (m *Master) GenerateTask() {
 		if task.status == TaskRunning {
 			allFinish = false
 			if time.Now().Sub(m.taskStats[taskid].startTime) > MaxTaskRunTime {
-				log.Println("超时没有完成，正在进行重新分配")
+				//log.Println("超时没有完成，正在进行重新分配")
 				//重新进行分配
 				m.taskCh <- m.initTaskById(taskid)
 				m.taskStats[taskid].status = TaskChan
@@ -48,7 +48,7 @@ func (m *Master) GenerateTask() {
 		//出错了 重新返回管道中 继续被执行
 		if task.status == TaskErr {
 			allFinish = false
-			log.Printf("任务号%d出错了,正在重新进行分配", taskid)
+			//log.Printf("任务号%d出错了,正在重新进行分配", taskid)
 			m.taskCh <- m.initTaskById(taskid)
 			m.taskStats[taskid].status = TaskChan
 		}

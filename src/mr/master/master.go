@@ -80,6 +80,5 @@ func max(x, y int) int {
 // Done
 //返回true证明所有的工作都完成了
 func (m *Master) Done() bool {
-	//ret := false
 	return m.done
 }
